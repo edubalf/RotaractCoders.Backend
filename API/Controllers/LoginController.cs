@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
+    [Authorize("Bearer")]
     [Produces("application/json")]
     [Route("api/Login")]
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -64,6 +65,12 @@ namespace API.Controllers
                     message = "Usuário ou senha invalida"
                 });
             }
+        }
+
+        [HttpGet("Autenticado")]
+        public IActionResult IsAutenticate()
+        {
+            return Ok();
         }
     }
 }

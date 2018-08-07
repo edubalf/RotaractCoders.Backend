@@ -23,6 +23,7 @@ namespace Infra.WebCrowley
             option.AddArgument("--headless");
 
             driver = new ChromeDriver("C:/", option);
+            driver.Manage().Timeouts().PageLoad = new TimeSpan(1, 0, 0);
             driver.Navigate().GoToUrl("http://www.omirbrasil.org.br/");
         }
 
@@ -56,7 +57,54 @@ namespace Infra.WebCrowley
         {
             driver.ExecuteScript($"AbreFichaSocio('{codigo}');");
 
-            return ExtratirDadosSocio(driver.PageSource, codigo);
+            var retorno = ExtratirDadosSocio(driver.PageSource, codigo);
+
+            //Gambirarra mosntra para cadastrar os cargos que não existem na omir
+            if (retorno.Codigo == "27715") //Tinho
+            {
+                retorno.CargosDistritais.ForEach(x =>
+                {
+                    if (x.NomeCargo == "Outro")
+                    {
+                        x.NomeCargo = "Diretor Distrital de Serviços a Cominidade";
+                    }
+                });
+            }
+
+            if (retorno.Codigo == "23466") //Max
+            {
+                retorno.CargosDistritais.ForEach(x =>
+                {
+                    if (x.NomeCargo == "Outro")
+                    {
+                        x.NomeCargo = "Diretor Distrital de Serviços Internacionais";
+                    }
+                });
+            }
+
+            if (retorno.Codigo == "26920") //Lígia
+            {
+                retorno.CargosDistritais.ForEach(x =>
+                {
+                    if (x.NomeCargo == "Diretor Distrital de Integração Rotária")
+                    {
+                        x.NomeCargo = "Diretora Distrital de Serviços Internos e Companheirismo";
+                    }
+                });
+            }
+
+            if (retorno.Codigo == "32062") //Bia
+            {
+                retorno.CargosDistritais.ForEach(x =>
+                {
+                    if (x.NomeCargo == "Diretor Distrital de Integração")
+                    {
+                        x.NomeCargo = "Diretora Distrital de Integração Interact-Rotaract";
+                    }
+                });
+            }
+
+            return retorno;
         }
 
         #region ListarDistritos - privcate methods

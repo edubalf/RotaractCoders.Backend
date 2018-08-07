@@ -34,12 +34,6 @@ namespace BootWebCrawlerSocios
                 lista.Add(new Thread(NovaThread));
                 lista.Add(new Thread(NovaThread));
                 lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
 
                 lista.ForEach(x =>
                 {
