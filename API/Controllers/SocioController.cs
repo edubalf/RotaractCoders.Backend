@@ -50,9 +50,24 @@ namespace API.Controllers
         {
             gestaoFim = gestaoFim.AddDays(1);
 
-            return Ok(_cargoSocioRepository
-                .ListarEquipeDistrital(gestaoInicio, gestaoFim, numeroDistrito, "Rotaract")
-                .OrderBy(x => x.NomeSocio));
+            var equipeDistritalSemDuplicidade = new List<CargoSocio>();
+
+            var equipe = _cargoSocioRepository
+                .ListarEquipeDistrital(gestaoInicio, gestaoFim, numeroDistrito, "Rotaract");
+
+            equipe.ForEach(x =>
+            {
+                if (!equipeDistritalSemDuplicidade.Any(a => a.CodigoSocio == x.CodigoSocio))
+                {
+                    equipeDistritalSemDuplicidade.Add(x);
+                }
+                else
+                {
+                    equipeDistritalSemDuplicidade.FirstOrDefault(a => a.CodigoSocio == x.CodigoSocio).NomeCargo += " / " + x.NomeCargo;
+                }
+            });
+
+            return Ok(equipeDistritalSemDuplicidade.OrderBy(x => x.NomeSocio));
         }
 
         [HttpGet("ListarPresidentes/{gestaoInicio}/{gestaoFim}/{numeroDistrito}")]
