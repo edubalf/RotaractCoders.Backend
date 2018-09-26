@@ -7,6 +7,7 @@ namespace Domain.Commands.Inputs
     {
         public string CodigoSocio { get; set; }
         public string CodigoClube { get; set; }
+        public string NumeroDistrito { get; set; }
         public string Nome { get; set; }
         public string Apelido { get; set; }
         public DateTime? DataNascimento { get; set; }

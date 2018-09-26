@@ -40,7 +40,24 @@ namespace API.Controllers
                 x.CodigoSocio,
                 x.Foto,
                 x.CodigoClube,
-                x.Clubes
+                x.Clubes,
+                x.Cargos
+            }).OrderBy(x => x.Nome));
+        }
+
+        [HttpGet("ListarTodos/{numeroDistrito}")]
+        [AllowAnonymous]
+        public IActionResult ListarTodosAtivos(string numeroDistrito)
+        {
+            return Ok(_socioRepository.ListarTodos(numeroDistrito)
+                .Select(x => new
+            {
+                x.Nome,
+                x.CodigoSocio,
+                x.Foto,
+                x.CodigoClube,
+                x.Clubes,
+                x.NomeClubeAtual
             }).OrderBy(x => x.Nome));
         }
 

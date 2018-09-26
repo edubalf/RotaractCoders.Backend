@@ -42,14 +42,13 @@ namespace Infra.AzureTables
             _baseRepository.Evento.Execute(insertOperation);
         }
 
-        public List<Evento> Listar()
+        public List<Evento> ListarProximosEventos()
         {
-            TableQuery<Evento> tableQuery = new TableQuery<Evento>();
-            TableContinuationToken continuationToken = null;
-            TableQuerySegment<Evento> tableQueryResult = _baseRepository.Evento.ExecuteQuerySegmented(tableQuery, continuationToken);
-            continuationToken = tableQueryResult.ContinuationToken;
+            var query = new TableQuery<Evento>()
+                .Where(TableQuery.GenerateFilterConditionForDate("DataEvento", QueryComparisons.GreaterThan, DateTime.Now));
+            var retorno = _baseRepository.Evento.ExecuteQuery(query);
 
-            return tableQueryResult.Results.Where(x => x.BitAtivo == true).ToList();
+            return retorno.Where(x => x.BitAtivo == true).ToList();
         }
 
         public List<Evento> Listar(DateTime dataUltimaAtualizacao)

@@ -10,6 +10,8 @@ namespace Domain.Entities
     public class Socio : TableEntity
     {
         public string CodigoSocio { get; set; }
+        public string CodigoClube { get; set; }
+        public string NumeroDistrito { get; set; }
         public string Nome { get; set; }
         public string Apelido { get; set; }
         public DateTime? DataNascimento { get; set; }
@@ -17,12 +19,13 @@ namespace Domain.Entities
         public string Facebook { get; set; }
         public string Instagram { get; set; }
         public string Celular { get; set; }
-        public string CodigoClube { get; set; }
         public string Foto { get; set; }
         public string CargosSerializado { get; set; }
         public string ClubesSerializado { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public bool BitAtivo { get; set; } = true;
+        public bool Ativo => Clubes.Count(x => x.Desligamento == null || x.Desligamento.Value.Year < 1000) >= 1;
+        public string NomeClubeAtual => Ativo ? Clubes.FirstOrDefault(x => x.Desligamento == null || x.Desligamento.Value.Year < 1000).Nome : string.Empty;
 
         public List<Cargo> Cargos
         {
@@ -55,6 +58,7 @@ namespace Domain.Entities
         {
             CodigoSocio = input.CodigoSocio;
             CodigoClube = input.CodigoClube;
+            NumeroDistrito = input.NumeroDistrito;
             Nome = input.Nome;
             Apelido = input.Apelido;
             DataNascimento = input.DataNascimento;
@@ -87,12 +91,14 @@ namespace Domain.Entities
 
             RowKey = CodigoSocio;
             PartitionKey = CodigoClube;
+
         }
 
         public void Atualizar(Socio input)
         {
             CodigoSocio = input.CodigoSocio;
             CodigoClube = input.CodigoClube;
+            NumeroDistrito = input.NumeroDistrito;
             Nome = input.Nome;
             Apelido = input.Apelido;
             DataNascimento = input.DataNascimento;
@@ -129,6 +135,7 @@ namespace Domain.Entities
         {
             CodigoSocio = input.CodigoSocio;
             CodigoClube = input.CodigoClube;
+            NumeroDistrito = input.NumeroDistrito;
             Nome = input.Nome;
             Apelido = input.Apelido;
             DataNascimento = input.DataNascimento;

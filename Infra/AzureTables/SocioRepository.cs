@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.WindowsAzure.Storage.Table;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace Infra.AzureTables
             {
                 SelectColumns = new List<string>
                 {
-                    "Nome", "CodigoSocio", "Foto", "CodigoClube", "ClubesSerializado"
+                    "Nome", "CodigoSocio", "Foto", "CodigoClube", "ClubesSerializado", "CargosSerializado"
                 },
                 FilterString = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, codigoClube)
             };
@@ -54,6 +55,25 @@ namespace Infra.AzureTables
             var retorno = _baseRepository.Socio.ExecuteQuery(query);
 
             return retorno.Where(x => x.BitAtivo == true).ToList();
+        }
+
+        public List<Socio> ListarTodos(string numeroDistrito)
+        {
+            var query = new TableQuery<Socio>()
+            {
+                SelectColumns = new List<string>
+                {
+                    "Nome", "CodigoSocio", "Foto", "CodigoClube", "ClubesSerializado"
+                },
+                FilterString = TableQuery.GenerateFilterCondition("NumeroDistrito", QueryComparisons.Equal, numeroDistrito)
+            };
+
+            var retorno = _baseRepository.Socio.ExecuteQuery(query);
+
+            return retorno
+                .Where(x => x.BitAtivo == true && x.Ativo)
+                .DistinctBy(x => x.CodigoSocio)
+                .ToList();
         }
 
         public List<Socio> Listar(string codigoClube, DateTime dataUltimaAtualizacao)

@@ -18,10 +18,10 @@ namespace Infra.WebCrowley
         {
             var retorno = new List<string>();
 
-            ChromeOptions option = new ChromeOptions();
-            option.AddArgument("--headless");
+            //ChromeOptions option = new ChromeOptions();
+            //option.AddArgument("--headless");
 
-            using (var driver = new ChromeDriver("C:/", option))
+            using (var driver = new ChromeDriver("C:/"))
             {
                 driver.Navigate().GoToUrl("http://projetos.omirbrasil.org.br/home.php");
                 driver.ExecuteScript($"document.getElementById('distrito').value = '{numeroDistrito}';");

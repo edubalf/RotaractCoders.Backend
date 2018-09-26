@@ -24,7 +24,7 @@ namespace API.Controllers
         [AllowAnonymous]
         public IActionResult Listar()
         {
-            return Ok(_eventoRepository.Listar().OrderBy(x => x.DataEvento));
+            return Ok(_eventoRepository.ListarProximosEventos().OrderBy(x => x.DataEvento));
         }
 
         [HttpGet("{id}")]

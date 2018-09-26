@@ -28,43 +28,52 @@ namespace BootWebCrawlerSocios
                 processo.IniciarProcessamentoSocio();
                 processadorRepository.Atualizar(processo);
 
-                var lista = new List<Thread>();
+                //var lista = new List<Thread>();
 
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
-                lista.Add(new Thread(NovaThread));
+                //lista.Add(new Thread(NovaThread));
+                //lista.Add(new Thread(NovaThread));
+                //lista.Add(new Thread(NovaThread));
+                //lista.Add(new Thread(NovaThread));
 
-                lista.ForEach(x =>
-                {
-                    x.Start();
-                });
+                //lista.ForEach(x =>
+                //{
+                //    x.Start();
+                //});
 
-                while (true)
-                {
-                    var socioQueue = new SocioQueue();
-                    var quantidadeSocio = socioQueue.QuantidadeSocios();
+                //while (true)
+                //{
+                //    var socioQueue = new SocioQueue();
+                //    var quantidadeSocio = socioQueue.QuantidadeSocios();
 
-                    Console.WriteLine($"Socios processados {processo.QuantidadeSocios - quantidadeSocio} de {processo.QuantidadeSocios}");
+                //    Console.WriteLine($"Socios processados {processo.QuantidadeSocios - quantidadeSocio} de {processo.QuantidadeSocios}");
 
-                    if (quantidadeSocio == 0)
-                    {
-                        processo = processadorRepository.BuscarProcessoEmAndamento();
+                //    if (quantidadeSocio == 0)
+                //    {
+                //        processo = processadorRepository.BuscarProcessoEmAndamento();
 
-                        processo.FinalizarProcessamentoSocio();
-                        processadorRepository.Atualizar(processo);
+                //        processo.FinalizarProcessamentoSocio();
+                //        processadorRepository.Atualizar(processo);
 
-                        break;
-                    }
+                //        break;
+                //    }
 
-                    Thread.Sleep(10000);
-                }
+                //    Thread.Sleep(10000);
+                //}
+
+                NovaThread();
+
+                processo = processadorRepository.BuscarProcessoEmAndamento();
+
+                processo.FinalizarProcessamentoSocio();
+                processadorRepository.Atualizar(processo);
             }
         }
 
         static void NovaThread()
         {
             var socioQueue = new SocioQueue();
+            var quantidadeSocio = socioQueue.QuantidadeSocios();
+            var quantidadeProcessados = 0;
 
             while (true)
             {
@@ -82,6 +91,10 @@ namespace BootWebCrawlerSocios
 
                     socioQueue.Deletar(socioFila);
                 }
+
+                quantidadeProcessados++;
+
+                Console.WriteLine($"Socios processados {quantidadeSocio - quantidadeProcessados} de {quantidadeSocio}");
             }
         }
 
@@ -146,7 +159,8 @@ namespace BootWebCrawlerSocios
                 {
                     CodigoSocio = socio.Codigo,
                     CodigoClube = codigoClube,
-                    Nome = socio.Nome,
+                    NumeroDistrito = numeroDistrito,
+                    Nome = NormalizarNome(socio.Nome),
                     Apelido = socio.Apelido,
                     DataNascimento = socio.DataNascimento,
                     Email = email,
@@ -167,7 +181,8 @@ namespace BootWebCrawlerSocios
                 {
                     CodigoSocio = socio.Codigo,
                     CodigoClube = codigoClube,
-                    Nome = socio.Nome,
+                    NumeroDistrito = numeroDistrito,
+                    Nome = NormalizarNome(socio.Nome),
                     Apelido = socio.Apelido,
                     DataNascimento = socio.DataNascimento,
                     Email = email,
@@ -184,6 +199,27 @@ namespace BootWebCrawlerSocios
 
                 socioRepository.Atualizar(socioSalvo);
             }
+        }
+
+        private static string NormalizarNome(string nome)
+        {
+            var nomeNormalizado = string.Empty;
+
+            var nomes = nome.Split(' ').ToList();
+
+            nomes.ForEach(x =>
+            {
+                x = x.ToLower();
+
+                if (x.Length > 2)
+                {
+                    x = char.ToUpper(x[0]) + x.Substring(1);
+                }
+
+                nomeNormalizado += x + " ";
+            });
+
+            return nomeNormalizado.Trim();
         }
     }
 }

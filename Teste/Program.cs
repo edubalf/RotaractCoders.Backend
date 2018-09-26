@@ -3,6 +3,7 @@ using Domain.Commands.OmirBrasil.Results;
 using Domain.Entities;
 using Infra.AzureTables;
 using Infra.WebCrowley;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,148 +13,33 @@ namespace Teste
     {
         static void Main(string[] args)
         {
-            using (var omir = new OmirBrasilRepository())
-            {
-                var clubes = omir.BuscarDistritoPorNumero("4430");
+            Console.WriteLine("EDUARDO BALTAZAR FERNANDES -> " + NormalizarNome("EDUARDO BALTAZAR FERNANDES"));
+            Console.WriteLine("eduardo baltazar fernandes -> " + NormalizarNome("eduardo baltazar fernandes"));
+            Console.WriteLine("EDUARDO de FERNANDES -> " + NormalizarNome("EDUARDO de FERNANDES"));
+            Console.WriteLine("EDUARDO De FERNANDES -> " + NormalizarNome("EDUARDO De FERNANDES"));
 
-                clubes.CodigoClubes.ForEach(codigo =>
-                {
-                    var clube = omir.BuscarClubePorCodigo(codigo);
-                    SalvarClube(clube);
-
-                    clube.Socios.ForEach(socio =>
-                    {
-                        var socioOmir = omir.BuscarSocioPorCodigo(socio.Codigo);
-                        SalvarSocio(socioOmir, socio.Email);
-                    });
-                });
-            }
+            Console.ReadKey();
         }
 
-        private static void SalvarClube(OmirClubeResult clube)
+        private static string NormalizarNome(string nome)
         {
-            var clubeRepository = new ClubeRepository();
-            var clubeSalvo = clubeRepository.ObterPorCodigo(clube.Codigo);
+            var nomeNormalizado = string.Empty;
 
-            if (clubeSalvo == null)
+            var nomes = nome.Split(' ').ToList();
+
+            nomes.ForEach(x =>
             {
-                clubeRepository.Incluir(new Clube(new CriarClubeInput()
+                x = x.ToLower();
+
+                if (x.Length > 2)
                 {
-                    Codigo = clube.Codigo,
-                    Nome = clube.Nome,
-                    DataFundacao = clube.DataFundacao,
-                    Email = clube.Email,
-                    NumeroDistrito = "4430",
-                    Facebook = clube.Facebook,
-                    RotaryPadrinho = clube.RotaryPadrinho,
-                    DataFechamento = clube.DataFechamento,
-                    Programa = "Rotaract",
-                    Site = clube.Site
-                }));
-            }
-            else
-            {
-                clubeSalvo.Atualizar(new CriarClubeInput()
-                {
-                    Codigo = clube.Codigo,
-                    Nome = clube.Nome,
-                    DataFundacao = clube.DataFundacao,
-                    Email = clube.Email,
-                    NumeroDistrito = "4430",
-                    Facebook = clube.Facebook,
-                    RotaryPadrinho = clube.RotaryPadrinho,
-                    DataFechamento = clube.DataFechamento,
-                    Programa = "Rotaract",
-                    Site = clube.Site
-                });
+                    x = char.ToUpper(x[0]) + x.Substring(1);
+                }
 
-                clubeRepository.Atualizar(clubeSalvo);
-            }
-        }
-
-        private static void SalvarSocio(OmirSocioResult socio, string email)
-        {
-            var socioRepository = new SocioRepository();
-            var socioSalvo = socioRepository.ObterPorCodigo(socio.Codigo);
-
-            var cargos = new List<CadastrarCargoSocioInput>();
-
-            socio.CargosClube.ForEach(cargo =>
-            {
-                cargos.Add(new CadastrarCargoSocioInput
-                {
-                    Nome = cargo.NomeCargo,
-                    De = cargo.De,
-                    Ate = cargo.Ate,
-                    TipoCargo = "Clube"
-                });
+                nomeNormalizado += x + " ";
             });
 
-            socio.CargosDistritais.ForEach(cargo =>
-            {
-                cargos.Add(new CadastrarCargoSocioInput
-                {
-                    Nome = cargo.NomeCargo,
-                    De = cargo.De,
-                    Ate = cargo.Ate,
-                    TipoCargo = "Distrital"
-                });
-            });
-
-            socio.CargosRotaractBrasil.ForEach(cargo =>
-            {
-                cargos.Add(new CadastrarCargoSocioInput
-                {
-                    Nome = cargo.NomeCargo,
-                    De = cargo.De,
-                    Ate = cargo.Ate,
-                    TipoCargo = "Rotaract Brasil"
-                });
-            });
-
-            if (socioSalvo == null)
-            {
-                socioRepository.Incluir(new Socio(new CadastroSocioInput()
-                {
-                    Codigo = socio.Codigo,
-                    Nome = socio.Nome,
-                    Apelido = socio.Apelido,
-                    DataNascimento = socio.DataNascimento,
-                    Email = email,
-                    Foto = socio.FotoUrl,
-                    Cargos = cargos,
-                    Clubes = socio.Clubes.Select(x => new CadastroSocioClubeInput
-                    {
-                        NomeClube = x.NomeClube,
-                        Desligamento = x.Desligamento,
-                        NumeroDistrito = x.NumeroDistrito,
-                        Posse = x.Posse
-                    }).ToList()
-                }));
-            }
-            else
-            {
-                socioSalvo.Atualizar(new CadastroSocioInput()
-                {
-                    RowKey = socioSalvo.RowKey,
-                    Codigo = socio.Codigo,
-                    Nome = socio.Nome,
-                    Apelido = socio.Apelido,
-                    DataNascimento = socio.DataNascimento,
-                    Email = email,
-                    Foto = socio.FotoUrl,
-                    Cargos = cargos,
-                    Clubes = socio.Clubes.Select(x => new CadastroSocioClubeInput
-                    {
-                        NomeClube = x.NomeClube,
-                        Desligamento = x.Desligamento,
-                        NumeroDistrito = x.NumeroDistrito,
-                        Posse = x.Posse
-                    }).ToList()
-                });
-
-                socioRepository.Atualizar(socioSalvo);
-            }
+            return nomeNormalizado.Trim();
         }
     }
 }
