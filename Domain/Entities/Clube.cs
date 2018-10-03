@@ -42,6 +42,12 @@ namespace Domain.Entities
             BitAtivo = true;
 
             RowKey = Guid.NewGuid().ToString();
+
+            if (string.IsNullOrEmpty(Codigo))
+            {
+                Codigo = RowKey;
+            }
+
             PartitionKey = Codigo;
         }
 

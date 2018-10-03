@@ -19,11 +19,24 @@ namespace API.Controllers
             _clubeRepository = new ClubeRepository();
         }
 
-        [HttpGet("{numeroDistrito}")]
+        [HttpGet("{numeroDistrito}/{programa}")]
         [AllowAnonymous]
-        public IActionResult Listar(string numeroDistrito)
+        public IActionResult Listar(string numeroDistrito, string programa)
         {
             var lista = _clubeRepository.Listar(numeroDistrito)
+                .Where(x => x.Programa == programa)
+                .Select(x => new { x.Codigo, x.Nome, x.DataFechamento })
+                .OrderBy(x => x.Nome);
+
+            return Ok(lista);
+        }
+
+        [HttpGet("{numeroDistrito}")]
+        [AllowAnonymous]
+        public IActionResult ListarRotaract(string numeroDistrito)
+        {
+            var lista = _clubeRepository.Listar(numeroDistrito)
+                .Where(x => x.Programa == "Rotaract")
                 .Select(x => new { x.Codigo, x.Nome, x.DataFechamento })
                 .OrderBy(x => x.Nome);
 

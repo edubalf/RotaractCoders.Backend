@@ -42,7 +42,7 @@ namespace Infra.AzureTables
             {
                 SelectColumns = new List<string>
                 {
-                    "Codigo", "Nome", "DataFechamento"
+                    "Codigo", "Nome", "DataFechamento", "Programa"
                 },
                 FilterString = TableQuery.GenerateFilterCondition("NumeroDistrito", QueryComparisons.Equal, numeroDistrito)
             };
